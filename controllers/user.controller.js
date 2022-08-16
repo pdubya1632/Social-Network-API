@@ -61,10 +61,47 @@ exports.userStore = [
 exports.userList = async (req, res) => {
   UserModel.find({}, (err, result) => {
     if (err) {
-      res.send(err);
+      return apiResponse.ErrorResponse(res, err);
     }
     res.send(result);
   });
+};
+
+/* GET SINGLE USER */
+exports.userDetail = async (req, res) => {
+  UserModel.findOne({ _id: req.params.id }, (err, result) => {
+    if (err) {
+      return apiResponse.ErrorResponse(res, err);
+    }
+    res.send(result);
+  });
+};
+
+/* UPDATE SINGLE USER */
+exports.userUpdate = async (req, res) => {
+  const updatedUser = await UserModel.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+  try {
+    return apiResponse.successResponseWithData(
+      res,
+      'Operation success',
+      updatedUser
+    );
+  } catch (err) {
+    return apiResponse.ErrorResponse(res, err);
+  }
+};
+
+/* DELETE SINGLE USER */
+exports.userDelete = async (req, res) => {
+  UserModel.findByIdAndRemove(req.params.id).exec();
+  res.send('Deleted');
 };
 
 //   function (req, res) {

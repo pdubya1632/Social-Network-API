@@ -72,19 +72,8 @@ const router = express.Router();
 
 router.post('/', UserController.userStore);
 router.get('/', UserController.userList);
-
-// const User = require('../models/user.model');
-// router.get('/', (req, res) => {
-//   User.find({}, (err, result) => {
-//     if (err) {
-//       res.send(err);
-//     }
-//     res.send(result);
-//   });
-// });
-
-// router.get('/:id', UserController.userDetail);
-// router.put('/:id', UserController.userUpdate);
-// router.delete('/:id', UserController.userDelete);
+router.get('/:id', UserController.userDetail);
+router.patch('/:id', UserController.userUpdate);
+router.delete('/:id', UserController.userDelete);
 
 module.exports = router;
