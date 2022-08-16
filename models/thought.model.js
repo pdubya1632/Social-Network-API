@@ -15,9 +15,9 @@ const thoughtSchema = new mongoose.Schema(
       {
         type: new mongoose.Schema(
           {
-            reactionId: number,
-            reactionBody: string,
-            username: string,
+            reactionId: Number,
+            reactionBody: String,
+            username: String,
           },
           { timestamps: true }
         ),
@@ -27,10 +27,8 @@ const thoughtSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-thoughtSchema.virtual(
-  'reactionCount'.get(function () {
-    return this.reactions.length;
-  })
-);
+thoughtSchema.virtual('reactionCount').get(function () {
+  return this.reactions.length;
+});
 
 module.exports = mongoose.model('Thought', thoughtSchema);

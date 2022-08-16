@@ -65,14 +65,26 @@
 // module.exports = router;
 
 const express = require('express');
+const { contextsKey } = require('express-validator/src/base');
 const UserController = require('../controllers/user.controller');
 
-var router = express.Router();
+const router = express.Router();
 
-router.get('/', UserController.userList);
-router.get('/:id', UserController.userDetail);
 router.post('/', UserController.userStore);
-router.put('/:id', UserController.userUpdate);
-router.delete('/:id', UserController.userDelete);
+router.get('/', UserController.userList);
+
+// const User = require('../models/user.model');
+// router.get('/', (req, res) => {
+//   User.find({}, (err, result) => {
+//     if (err) {
+//       res.send(err);
+//     }
+//     res.send(result);
+//   });
+// });
+
+// router.get('/:id', UserController.userDetail);
+// router.put('/:id', UserController.userUpdate);
+// router.delete('/:id', UserController.userDelete);
 
 module.exports = router;
