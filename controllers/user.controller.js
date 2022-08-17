@@ -1,5 +1,5 @@
 const { body, validationResult } = require('express-validator');
-const UserModel = require('../models/user.model');
+const { UserModel } = require('../models');
 const apiResponse = require('../helpers/api.helper');
 
 /* CREATE USER */
@@ -38,7 +38,7 @@ exports.userStore = [
         });
         user.save(function (err) {
           if (err) {
-            return apiResponse.ErrorResponse(res, err);
+            return apiResponse.errorResponse(res, err);
           }
           let userData = {
             username: user.username,
@@ -52,7 +52,7 @@ exports.userStore = [
         });
       }
     } catch (err) {
-      return apiResponse.ErrorResponse(res, err);
+      return apiResponse.errorResponse(res, err);
     }
   },
 ];
@@ -61,7 +61,7 @@ exports.userStore = [
 exports.userList = async (req, res) => {
   UserModel.find({}, (err, result) => {
     if (err) {
-      return apiResponse.ErrorResponse(res, err);
+      return apiResponse.errorResponse(res, err);
     }
     res.send(result);
   });
@@ -71,7 +71,7 @@ exports.userList = async (req, res) => {
 exports.userDetail = async (req, res) => {
   UserModel.findOne({ _id: req.params.id }, (err, result) => {
     if (err) {
-      return apiResponse.ErrorResponse(res, err);
+      return apiResponse.errorResponse(res, err);
     }
     res.send(result);
   });
@@ -94,7 +94,7 @@ exports.userUpdate = async (req, res) => {
       updatedUser
     );
   } catch (err) {
-    return apiResponse.ErrorResponse(res, err);
+    return apiResponse.errorResponse(res, err);
   }
 };
 
@@ -102,6 +102,42 @@ exports.userUpdate = async (req, res) => {
 exports.userDelete = async (req, res) => {
   UserModel.findByIdAndRemove(req.params.id).exec();
   res.send('Deleted');
+};
+
+/* CREATE FRIEND CONNECTION */
+exports.friendStore = async (req, res) => {
+  const updatedUser = await UserModel.findByIdAndUpdate(
+    { _id: req.params.userId },
+    { $push: { friends: req.params.friendId } },
+    { new: true }
+  );
+  try {
+    return apiResponse.successResponseWithData(
+      res,
+      'Operation success',
+      updatedUser
+    );
+  } catch (err) {
+    return apiResponse.errorResponse(res, err);
+  }
+};
+
+/* DELETE FRIEND CONNECTION */
+exports.friendDelete = async (req, res) => {
+  const updatedUser = await UserModel.findByIdAndUpdate(
+    { _id: req.params.userId },
+    { $pull: { friends: req.params.friendId } },
+    { new: true }
+  );
+  try {
+    return apiResponse.successResponseWithData(
+      res,
+      'Operation success',
+      updatedUser
+    );
+  } catch (err) {
+    return apiResponse.errorResponse(res, err);
+  }
 };
 
 //   function (req, res) {
@@ -122,7 +158,7 @@ exports.userDelete = async (req, res) => {
 //         }
 //       });
 //     } catch (err) {
-//       return apiResponse.ErrorResponse(res, err);
+//       return apiResponse.errorResponse(res, err);
 //     }
 //   },
 // ];

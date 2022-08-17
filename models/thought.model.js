@@ -7,7 +7,7 @@ const thoughtSchema = new mongoose.Schema(
       type: String,
     },
     username: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       ref: 'User',
       required: true,
     },
@@ -15,9 +15,14 @@ const thoughtSchema = new mongoose.Schema(
       {
         type: new mongoose.Schema(
           {
-            reactionId: Number,
-            reactionBody: String,
-            username: String,
+            reactionBody: {
+              type: String,
+              required: true,
+            },
+            username: {
+              type: String,
+              required: true,
+            },
           },
           { timestamps: true }
         ),

@@ -1,54 +1,37 @@
 const { body, validationResult } = require('express-validator');
-const ThoughtModel = require('../models/user.model');
+const { ThoughtModel, UserModel } = require('../models');
 const apiResponse = require('../helpers/api.helper');
 
 /* CREATE THOUGHT */
-exports.thoughtStore = [
-  body('thoughtText')
-    .isLength({ min: 1 })
-    .trim()
-    .withMessage('Thought text must be specified.'),
-  (req, res) => {
-    try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return apiResponse.validationErrorWithData(
-          res,
-          'Validation Error.',
-          errors.array()
-        );
-      } else {
-        const user = new ThoughtModel({
-          thoughtText: req.body.thoughText,
-          username: req.body.thoughtname,
-          userId: req.body.id,
-        });
-        user.save(function (err) {
-          if (err) {
-            return apiResponse.ErrorResponse(res, err);
-          }
-          let userData = {
-            username: user.thoughtname,
-            email: user.email,
-          };
-          return apiResponse.successResponseWithData(
-            res,
-            'New User Created',
-            userData
-          );
-        });
+exports.thoughtStore = ({ body }, res) => {
+  ThoughtModel.create(body)
+    .then(({ username, _id }) => {
+      return UserModel.findOneAndUpdate(
+        { username: username },
+        { $push: { thoughts: _id } },
+        { new: true, runValidators: true }
+      );
+    })
+    .then((data) => {
+      if (!data) {
+        res
+          .status(404)
+          .json({ message: 'No user found at this id!' });
+        return;
       }
-    } catch (err) {
-      return apiResponse.ErrorResponse(res, err);
-    }
-  },
-];
+      res.json(data);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(400).json(err);
+    });
+};
 
 /* GET ALL THOUGHTS */
 exports.thoughtList = async (req, res) => {
   ThoughtModel.find({}, (err, result) => {
     if (err) {
-      return apiResponse.ErrorResponse(res, err);
+      return apiResponse.errorResponse(res, err);
     }
     res.send(result);
   });
@@ -58,7 +41,7 @@ exports.thoughtList = async (req, res) => {
 exports.thoughtDetail = async (req, res) => {
   ThoughtModel.findOne({ _id: req.params.id }, (err, result) => {
     if (err) {
-      return apiResponse.ErrorResponse(res, err);
+      return apiResponse.errorResponse(res, err);
     }
     res.send(result);
   });
@@ -81,7 +64,7 @@ exports.thoughtUpdate = async (req, res) => {
       updatedUser
     );
   } catch (err) {
-    return apiResponse.ErrorResponse(res, err);
+    return apiResponse.errorResponse(res, err);
   }
 };
 
@@ -109,7 +92,7 @@ exports.thoughtDelete = async (req, res) => {
 //         }
 //       });
 //     } catch (err) {
-//       return apiResponse.ErrorResponse(res, err);
+//       return apiResponse.errorResponse(res, err);
 //     }
 //   },
 // ];
