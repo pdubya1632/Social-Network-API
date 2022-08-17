@@ -65,7 +65,6 @@
 // module.exports = router;
 
 const express = require('express');
-const { contextsKey } = require('express-validator/src/base');
 const UserController = require('../controllers/user.controller');
 
 const router = express.Router();
