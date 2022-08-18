@@ -21,7 +21,7 @@ exports.thoughtStore = ({ body }, res) => {
       }
       apiResponse.successResponseWithData(
         res,
-        'Creation success',
+        'Thought creation success',
         thoughtData
       );
     })
@@ -38,7 +38,7 @@ exports.thoughtList = (req, res) => {
     }
     apiResponse.successResponseWithData(
       res,
-      'Creation success',
+      'Listing all thoughts...',
       thoughts
     );
   });

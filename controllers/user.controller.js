@@ -1,61 +1,20 @@
-const { body, validationResult } = require('express-validator');
 const { UserModel } = require('../models');
 const apiResponse = require('../helpers/api.helper');
 
 /* CREATE USER */
-exports.userStore = [
-  body('username')
-    .isLength({ min: 1 })
-    .trim()
-    .withMessage('Username must be specified.')
-    .isAlphanumeric()
-    .withMessage('First name has non-alphanumeric characters.'),
-  body('email')
-    .isLength({ min: 1 })
-    .trim()
-    .withMessage('Email must be specified.')
-    .isEmail()
-    .withMessage('Email must be a valid email address.')
-    .custom(async (value) => {
-      const user = await UserModel.findOne({ email: value });
-      if (user) {
-        return Promise.reject('Email already in use');
-      }
-    }),
-  (req, res) => {
-    try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return apiResponse.validationErrorWithData(
-          res,
-          'Validation Error.',
-          errors.array()
-        );
-      } else {
-        const user = new UserModel({
-          username: req.body.username,
-          email: req.body.email,
-        });
-        user.save(function (err) {
-          if (err) {
-            return apiResponse.errorResponse(res, err);
-          }
-          let userData = {
-            username: user.username,
-            email: user.email,
-          };
-          return apiResponse.successResponseWithData(
-            res,
-            'New User Created',
-            userData
-          );
-        });
-      }
-    } catch (err) {
+exports.userStore = ({ body }, res) => {
+  UserModel.create(body)
+    .then((userData) => {
+      apiResponse.successResponseWithData(
+        res,
+        'User creation success',
+        userData
+      );
+    })
+    .catch((err) => {
       return apiResponse.errorResponse(res, err);
-    }
-  },
-];
+    });
+};
 
 /* GET ALL USERS */
 exports.userList = async (req, res) => {
@@ -63,7 +22,11 @@ exports.userList = async (req, res) => {
     if (err) {
       return apiResponse.errorResponse(res, err);
     }
-    res.send(result);
+    apiResponse.successResponseWithData(
+      res,
+      'Listing all users...',
+      result
+    );
   });
 };
 
@@ -73,92 +36,106 @@ exports.userDetail = async (req, res) => {
     if (err) {
       return apiResponse.errorResponse(res, err);
     }
-    res.send(result);
+    apiResponse.successResponseWithData(
+      res,
+      'Listing single user...',
+      result
+    );
   });
 };
 
 /* UPDATE SINGLE USER */
-exports.userUpdate = async (req, res) => {
-  const updatedUser = await UserModel.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    {
-      new: true,
-      runValidators: true,
-    }
-  );
-  try {
-    return apiResponse.successResponseWithData(
-      res,
-      'Operation success',
-      updatedUser
-    );
-  } catch (err) {
-    return apiResponse.errorResponse(res, err);
-  }
+exports.userUpdate = ({ body, params }, res) => {
+  UserModel.findByIdAndUpdate(params.id, body, {
+    new: true,
+    runValidators: true,
+  })
+    .then((userData) => {
+      if (!userData) {
+        apiResponse.notFoundResponse(
+          res,
+          'User not found with id provided'
+        );
+      }
+      apiResponse.successResponseWithData(
+        res,
+        'Update success',
+        userData
+      );
+    })
+    .catch((err) => {
+      return apiResponse.errorResponse(res, err);
+    });
 };
 
 /* DELETE SINGLE USER */
 exports.userDelete = async (req, res) => {
-  UserModel.findByIdAndRemove(req.params.id).exec();
-  res.send('Deleted');
+  UserModel.findByIdAndRemove(req.params.id)
+    .exec()
+    .then((userData) => {
+      if (!userData) {
+        apiResponse.notFoundResponse(
+          res,
+          'User not found with id provided'
+        );
+      }
+      apiResponse.successResponseWithData(
+        res,
+        'Delete success',
+        userData
+      );
+    })
+    .catch((err) => {
+      return apiResponse.errorResponse(res, err);
+    });
 };
 
 /* CREATE FRIEND CONNECTION */
-exports.friendStore = async (req, res) => {
-  const updatedUser = await UserModel.findByIdAndUpdate(
-    { _id: req.params.userId },
-    { $push: { friends: req.params.friendId } },
+exports.friendStore = ({ params }, res) => {
+  UserModel.findByIdAndUpdate(
+    { _id: params.userId },
+    { $push: { friends: params.friendId } },
     { new: true }
-  );
-  try {
-    return apiResponse.successResponseWithData(
-      res,
-      'Operation success',
-      updatedUser
-    );
-  } catch (err) {
-    return apiResponse.errorResponse(res, err);
-  }
+  )
+    .then((userData) => {
+      if (!userData) {
+        apiResponse.notFoundResponse(
+          res,
+          'User not found with id provided'
+        );
+      }
+      apiResponse.successResponseWithData(
+        res,
+        'Friend connection success',
+        userData
+      );
+    })
+    .catch((err) => {
+      return apiResponse.errorResponse(res, err);
+    });
 };
 
 /* DELETE FRIEND CONNECTION */
-exports.friendDelete = async (req, res) => {
-  const updatedUser = await UserModel.findByIdAndUpdate(
+exports.friendDelete = (req, res) => {
+  UserModel.findByIdAndUpdate(
     { _id: req.params.userId },
     { $pull: { friends: req.params.friendId } },
     { new: true }
-  );
-  try {
-    return apiResponse.successResponseWithData(
-      res,
-      'Operation success',
-      updatedUser
-    );
-  } catch (err) {
-    return apiResponse.errorResponse(res, err);
-  }
+  )
+    .then((userData) => {
+      if (!userData) {
+        apiResponse.notFoundResponse(
+          res,
+          'User not found with id provided'
+        );
+      }
+      apiResponse.successResponseWithData(
+        res,
+        'Delete success',
+        userData
+      );
+    })
+    .catch((err) => {
+      return apiResponse.errorResponse(res, err);
+    });
 };
-
-//   function (req, res) {
-//     try {
-//       UserModel.find({}).then((users) => {
-//         if (users.length > 0) {
-//           return apiResponse.successResponseWithData(
-//             res,
-//             'Operation success',
-//             users
-//           );
-//         } else {
-//           return apiResponse.successResponseWithData(
-//             res,
-//             'Operation success',
-//             []
-//           );
-//         }
-//       });
-//     } catch (err) {
-//       return apiResponse.errorResponse(res, err);
-//     }
-//   },
-// ];
