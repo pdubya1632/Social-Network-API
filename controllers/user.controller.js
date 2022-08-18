@@ -94,7 +94,7 @@ exports.userDelete = async (req, res) => {
 exports.friendStore = ({ params }, res) => {
   UserModel.findByIdAndUpdate(
     { _id: params.userId },
-    { $push: { friends: params.friendId } },
+    { $addToSet: { friends: params.friendId } },
     { new: true }
   )
     .then((userData) => {

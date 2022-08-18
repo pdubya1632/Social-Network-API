@@ -5,7 +5,7 @@ const apiResponse = require('../helpers/api.helper');
 exports.reactionStore = ({ body, params }, res) => {
   ThoughtModel.findByIdAndUpdate(
     { _id: params.thoughtId },
-    { $push: { reactions: body } },
+    { $addToSet: { reactions: body } },
     { new: true, runValidators: true }
   )
     .then((thoughtData) => {

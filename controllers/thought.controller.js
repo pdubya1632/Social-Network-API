@@ -7,7 +7,7 @@ exports.thoughtStore = ({ body }, res) => {
     .then(({ username, _id }) => {
       return UserModel.findOneAndUpdate(
         { username: username },
-        { $push: { thoughts: _id } },
+        { $addToSet: { thoughts: _id } },
         { new: true, runValidators: true }
       );
     })
