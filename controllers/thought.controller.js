@@ -49,7 +49,11 @@ exports.thoughtDetail = ({ params }, res) => {
     if (err) {
       return apiResponse.errorResponse(res, err);
     }
-    res.send(result);
+    apiResponse.successResponseWithData(
+      res,
+      'Listing thought by id',
+      result
+    );
   });
 };
 
@@ -79,7 +83,7 @@ exports.thoughtUpdate = ({ params, body }, res) => {
 };
 
 /* DELETE SINGLE THOUGHT */
-exports.thoughtDelete = async ({ params }, res) => {
+exports.thoughtDelete = ({ params }, res) => {
   ThoughtModel.findByIdAndRemove(params.id)
     .exec()
     .then((thoughtData) => {
