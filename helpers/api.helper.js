@@ -1,4 +1,4 @@
-exports.successResponse = function (res, msg) {
+exports.successResponse = (res, msg) => {
   const data = {
     status: 1,
     message: msg,
@@ -6,7 +6,7 @@ exports.successResponse = function (res, msg) {
   return res.status(200).json(data);
 };
 
-exports.successResponseWithData = function (res, msg, data) {
+exports.successResponseWithData = (res, msg, data) => {
   const resData = {
     status: 1,
     message: msg,
@@ -15,7 +15,7 @@ exports.successResponseWithData = function (res, msg, data) {
   return res.status(200).json(resData);
 };
 
-exports.errorResponse = function (res, msg) {
+exports.errorResponse = (res, msg) => {
   const data = {
     status: 0,
     message: msg,
@@ -23,7 +23,7 @@ exports.errorResponse = function (res, msg) {
   return res.status(500).json(data);
 };
 
-exports.notFoundResponse = function (res, msg) {
+exports.notFoundResponse = (res, msg) => {
   const data = {
     status: 0,
     message: msg,
@@ -31,7 +31,7 @@ exports.notFoundResponse = function (res, msg) {
   return res.status(404).json(data);
 };
 
-exports.validationErrorWithData = function (res, msg, data) {
+exports.validationErrorWithData = (res, msg, data) => {
   const resData = {
     status: 0,
     message: msg,
@@ -40,7 +40,7 @@ exports.validationErrorWithData = function (res, msg, data) {
   return res.status(400).json(resData);
 };
 
-exports.unauthorizedResponse = function (res, msg) {
+exports.unauthorizedResponse = (res, msg) => {
   const data = {
     status: 0,
     message: msg,

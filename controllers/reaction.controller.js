@@ -2,10 +2,10 @@ const { ThoughtModel } = require('../models');
 const apiResponse = require('../helpers/api.helper');
 
 /* CREATE REACTION */
-exports.reactionStore = (req, res) => {
+exports.reactionStore = ({ body, params }, res) => {
   ThoughtModel.findByIdAndUpdate(
-    { _id: req.params.thoughtId },
-    { $push: { reactions: req.body } },
+    { _id: params.thoughtId },
+    { $push: { reactions: body } },
     { new: true, runValidators: true }
   )
     .then((thoughtData) => {
@@ -27,10 +27,10 @@ exports.reactionStore = (req, res) => {
 };
 
 /* DELETE SINGLE REACTION */
-exports.reactionDelete = (req, res) => {
+exports.reactionDelete = ({ params }, res) => {
   ThoughtModel.findOneAndUpdate(
-    { _id: req.params.thoughtId },
-    { $pull: { reactions: { _id: req.params.reactionId } } },
+    { _id: params.thoughtId },
+    { $pull: { reactions: { _id: params.reactionId } } },
     { new: true }
   )
     .then((thoughtData) => {

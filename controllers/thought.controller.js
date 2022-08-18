@@ -1,4 +1,4 @@
-const { body, validationResult } = require('express-validator');
+// const { body, validationResult } = require('express-validator');
 const { ThoughtModel, UserModel } = require('../models');
 const apiResponse = require('../helpers/api.helper');
 
@@ -12,34 +12,41 @@ exports.thoughtStore = ({ body }, res) => {
         { new: true, runValidators: true }
       );
     })
-    .then((data) => {
-      if (!data) {
-        res
-          .status(404)
-          .json({ message: 'No user found at this id!' });
-        return;
+    .then((thoughtData) => {
+      if (!thoughtData) {
+        apiResponse.notFoundResponse(
+          res,
+          'User not found with that username'
+        );
       }
-      res.json(data);
+      apiResponse.successResponseWithData(
+        res,
+        'Creation success',
+        thoughtData
+      );
     })
     .catch((err) => {
-      console.log(err);
-      res.status(400).json(err);
+      return apiResponse.errorResponse(res, err);
     });
 };
 
 /* GET ALL THOUGHTS */
-exports.thoughtList = async (req, res) => {
-  ThoughtModel.find({}, (err, result) => {
+exports.thoughtList = (req, res) => {
+  ThoughtModel.find({}, (err, thoughts) => {
     if (err) {
       return apiResponse.errorResponse(res, err);
     }
-    res.send(result);
+    apiResponse.successResponseWithData(
+      res,
+      'Creation success',
+      thoughts
+    );
   });
 };
 
 /* GET SINGLE THOUGHT */
-exports.thoughtDetail = async (req, res) => {
-  ThoughtModel.findOne({ _id: req.params.id }, (err, result) => {
+exports.thoughtDetail = ({ params }, res) => {
+  ThoughtModel.findOne({ _id: params.id }, (err, result) => {
     if (err) {
       return apiResponse.errorResponse(res, err);
     }
@@ -48,51 +55,48 @@ exports.thoughtDetail = async (req, res) => {
 };
 
 /* UPDATE SINGLE THOUGHT */
-exports.thoughtUpdate = async (req, res) => {
-  const updatedUser = await ThoughtModel.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    {
-      new: true,
-      runValidators: true,
-    }
-  );
-  try {
-    return apiResponse.successResponseWithData(
-      res,
-      'Operation success',
-      updatedUser
-    );
-  } catch (err) {
-    return apiResponse.errorResponse(res, err);
-  }
+exports.thoughtUpdate = ({ params, body }, res) => {
+  ThoughtModel.findByIdAndUpdate(
+    { _id: params.thoughtId },
+    { thoughtText: body },
+    { new: true, runValidators: true }
+  )
+    .then((thoughtData) => {
+      if (!thoughtData) {
+        apiResponse.notFoundResponse(
+          res,
+          'Thought not found with id provided'
+        );
+      }
+      apiResponse.successResponseWithData(
+        res,
+        'Update success',
+        thoughtData
+      );
+    })
+    .catch((err) => {
+      return apiResponse.errorResponse(res, err);
+    });
 };
 
 /* DELETE SINGLE THOUGHT */
-exports.thoughtDelete = async (req, res) => {
-  ThoughtModel.findByIdAndRemove(req.params.id).exec();
-  res.send('Deleted');
+exports.thoughtDelete = async ({ params }, res) => {
+  ThoughtModel.findByIdAndRemove(params.id)
+    .exec()
+    .then((thoughtData) => {
+      if (!thoughtData) {
+        apiResponse.notFoundResponse(
+          res,
+          'Thought not found with id provided'
+        );
+      }
+      apiResponse.successResponseWithData(
+        res,
+        'Delete success',
+        thoughtData
+      );
+    })
+    .catch((err) => {
+      return apiResponse.errorResponse(res, err);
+    });
 };
-
-//   function (req, res) {
-//     try {
-//       ThoughtModel.find({}).then((users) => {
-//         if (users.length > 0) {
-//           return apiResponse.successResponseWithData(
-//             res,
-//             'Operation success',
-//             users
-//           );
-//         } else {
-//           return apiResponse.successResponseWithData(
-//             res,
-//             'Operation success',
-//             []
-//           );
-//         }
-//       });
-//     } catch (err) {
-//       return apiResponse.errorResponse(res, err);
-//     }
-//   },
-// ];
