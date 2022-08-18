@@ -1,6 +1,6 @@
 const router = require('express').Router();
 
-const UserController = require('../controllers/user.controller');
+const { UserController } = require('../controllers');
 
 /* CREATE & LIST ALL */
 router

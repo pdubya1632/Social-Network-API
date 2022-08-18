@@ -1,7 +1,9 @@
 const router = require('express').Router();
 
-const ThoughtController = require('../controllers/thought.controller');
-const ReactionController = require('../controllers/reaction.controller');
+const {
+  ThoughtController,
+  ReactionController,
+} = require('../controllers');
 
 /* CREATE & LIST ALL */
 router
