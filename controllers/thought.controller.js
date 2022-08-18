@@ -57,8 +57,8 @@ exports.thoughtDetail = ({ params }, res) => {
 /* UPDATE SINGLE THOUGHT */
 exports.thoughtUpdate = ({ params, body }, res) => {
   ThoughtModel.findByIdAndUpdate(
-    { _id: params.thoughtId },
-    { thoughtText: body },
+    { _id: params.id },
+    { thoughtText: body.thoughtText },
     { new: true, runValidators: true }
   )
     .then((thoughtData) => {
