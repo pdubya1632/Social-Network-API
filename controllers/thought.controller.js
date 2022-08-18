@@ -1,4 +1,3 @@
-// const { body, validationResult } = require('express-validator');
 const { ThoughtModel, UserModel } = require('../models');
 const apiResponse = require('../helpers/api.helper');
 
