@@ -8,19 +8,18 @@ exports.reactionStore = ({ body, params }, res) => {
     { $addToSet: { reactions: body } },
     { new: true, runValidators: true }
   )
-    .then((thoughtData) => {
-      if (!thoughtData) {
-        apiResponse.notFoundResponse(
-          res,
-          'Thought not found with id provided'
-        );
-      }
-      apiResponse.successResponseWithData(
-        res,
-        'Creation success',
-        thoughtData
-      );
-    })
+    .then((thoughtData) =>
+      !thoughtData
+        ? apiResponse.notFoundResponse(
+            res,
+            'Thought not found with id provided'
+          )
+        : apiResponse.successResponseWithData(
+            res,
+            'Reaction creation success',
+            thoughtData
+          )
+    )
     .catch((err) => {
       return apiResponse.errorResponse(res, err);
     });
@@ -33,19 +32,18 @@ exports.reactionDelete = ({ params }, res) => {
     { $pull: { reactions: { _id: params.reactionId } } },
     { new: true }
   )
-    .then((thoughtData) => {
-      if (!thoughtData) {
-        apiResponse.notFoundResponse(
-          res,
-          'Thought not found with id provided'
-        );
-      }
-      apiResponse.successResponseWithData(
-        res,
-        'Deletion success',
-        thoughtData
-      );
-    })
+    .then((thoughtData) =>
+      !thoughtData
+        ? apiResponse.notFoundResponse(
+            res,
+            'Thought not found with id provided'
+          )
+        : apiResponse.successResponseWithData(
+            res,
+            'Reaction deletion success',
+            thoughtData
+          )
+    )
     .catch((err) => {
       return apiResponse.errorResponse(res, err);
     });

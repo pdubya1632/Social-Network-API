@@ -50,19 +50,18 @@ exports.userUpdate = ({ body, params }, res) => {
     new: true,
     runValidators: true,
   })
-    .then((userData) => {
-      if (!userData) {
-        apiResponse.notFoundResponse(
-          res,
-          'User not found with id provided'
-        );
-      }
-      apiResponse.successResponseWithData(
-        res,
-        'Update success',
-        userData
-      );
-    })
+    .then((userData) =>
+      !userData
+        ? apiResponse.notFoundResponse(
+            res,
+            'User not found with id provided'
+          )
+        : apiResponse.successResponseWithData(
+            res,
+            'User update success',
+            userData
+          )
+    )
     .catch((err) => {
       return apiResponse.errorResponse(res, err);
     });
@@ -72,19 +71,18 @@ exports.userUpdate = ({ body, params }, res) => {
 exports.userDelete = async (req, res) => {
   UserModel.findByIdAndRemove(req.params.id)
     .exec()
-    .then((userData) => {
-      if (!userData) {
-        apiResponse.notFoundResponse(
-          res,
-          'User not found with id provided'
-        );
-      }
-      apiResponse.successResponseWithData(
-        res,
-        'Delete success',
-        userData
-      );
-    })
+    .then((userData) =>
+      !userData
+        ? apiResponse.notFoundResponse(
+            res,
+            'User not found with id provided'
+          )
+        : apiResponse.successResponseWithData(
+            res,
+            'User delete success',
+            userData
+          )
+    )
     .catch((err) => {
       return apiResponse.errorResponse(res, err);
     });
@@ -95,21 +93,20 @@ exports.friendStore = ({ params }, res) => {
   UserModel.findByIdAndUpdate(
     { _id: params.userId },
     { $addToSet: { friends: params.friendId } },
-    { new: true }
+    { runValidators: true, new: true }
   )
-    .then((userData) => {
-      if (!userData) {
-        apiResponse.notFoundResponse(
-          res,
-          'User not found with id provided'
-        );
-      }
-      apiResponse.successResponseWithData(
-        res,
-        'Friend connection success',
-        userData
-      );
-    })
+    .then((userData) =>
+      !userData
+        ? apiResponse.notFoundResponse(
+            res,
+            'User not found with id provided'
+          )
+        : apiResponse.successResponseWithData(
+            res,
+            'Friend connection created',
+            userData
+          )
+    )
     .catch((err) => {
       return apiResponse.errorResponse(res, err);
     });
@@ -120,21 +117,20 @@ exports.friendDelete = (req, res) => {
   UserModel.findByIdAndUpdate(
     { _id: req.params.userId },
     { $pull: { friends: req.params.friendId } },
-    { new: true }
+    { runValidators: true, new: true }
   )
-    .then((userData) => {
-      if (!userData) {
-        apiResponse.notFoundResponse(
-          res,
-          'User not found with id provided'
-        );
-      }
-      apiResponse.successResponseWithData(
-        res,
-        'Delete success',
-        userData
-      );
-    })
+    .then((userData) =>
+      !userData
+        ? apiResponse.notFoundResponse(
+            res,
+            'User not found with id provided'
+          )
+        : apiResponse.successResponseWithData(
+            res,
+            'User delete success',
+            userData
+          )
+    )
     .catch((err) => {
       return apiResponse.errorResponse(res, err);
     });

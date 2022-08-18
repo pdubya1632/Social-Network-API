@@ -11,19 +11,18 @@ exports.thoughtStore = ({ body }, res) => {
         { new: true, runValidators: true }
       );
     })
-    .then((thoughtData) => {
-      if (!thoughtData) {
-        apiResponse.notFoundResponse(
-          res,
-          'User not found with that username'
-        );
-      }
-      apiResponse.successResponseWithData(
-        res,
-        'Thought creation success',
-        thoughtData
-      );
-    })
+    .then((thoughtData) =>
+      !thoughtData
+        ? apiResponse.notFoundResponse(
+            res,
+            'User not found with that username'
+          )
+        : apiResponse.successResponseWithData(
+            res,
+            'Thought creation success',
+            thoughtData
+          )
+    )
     .catch((err) => {
       return apiResponse.errorResponse(res, err);
     });
@@ -64,19 +63,18 @@ exports.thoughtUpdate = ({ params, body }, res) => {
     { thoughtText: body.thoughtText },
     { new: true, runValidators: true }
   )
-    .then((thoughtData) => {
-      if (!thoughtData) {
-        apiResponse.notFoundResponse(
-          res,
-          'Thought not found with id provided'
-        );
-      }
-      apiResponse.successResponseWithData(
-        res,
-        'Update success',
-        thoughtData
-      );
-    })
+    .then((thoughtData) =>
+      !thoughtData
+        ? apiResponse.notFoundResponse(
+            res,
+            'Thought not found with id provided'
+          )
+        : apiResponse.successResponseWithData(
+            res,
+            'Thought update success',
+            thoughtData
+          )
+    )
     .catch((err) => {
       return apiResponse.errorResponse(res, err);
     });
@@ -86,19 +84,18 @@ exports.thoughtUpdate = ({ params, body }, res) => {
 exports.thoughtDelete = ({ params }, res) => {
   ThoughtModel.findByIdAndRemove(params.id)
     .exec()
-    .then((thoughtData) => {
-      if (!thoughtData) {
-        apiResponse.notFoundResponse(
-          res,
-          'Thought not found with id provided'
-        );
-      }
-      apiResponse.successResponseWithData(
-        res,
-        'Delete success',
-        thoughtData
-      );
-    })
+    .then((thoughtData) =>
+      !thoughtData
+        ? apiResponse.notFoundResponse(
+            res,
+            'Thought not found with id provided'
+          )
+        : apiResponse.successResponseWithData(
+            res,
+            'Delete success',
+            thoughtData
+          )
+    )
     .catch((err) => {
       return apiResponse.errorResponse(res, err);
     });
